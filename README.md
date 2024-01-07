@@ -47,6 +47,16 @@ or
 npm run dev
 ```
 
+Remember to install all dependencies by using:
+```bash
+yarn install
+```
+
+or
+```bash
+npm install
+```
+
 This project use yarn as package manager from start, so I highly recommend using yarn.
 
 ## For who using pm2
