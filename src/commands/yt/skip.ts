@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, Message } from "discord.js";
 import { video_basic_info } from "play-dl";
 
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("skip")
