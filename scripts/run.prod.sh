@@ -14,11 +14,12 @@ echo "Starting building";
 echo "Clearing old builds";
 echo Deleted $(rm -rfv ./dist | wc -l) file;
 
-echo Deploying slash commands
-ts-node ./src/deploy.ts
 
 echo "Building...";
 tsc -p tsconfig.json;
+
+echo Deploying slash commands
+node ./dist/deploy.js
 
 echo "Done. Starting application";
 node ./dist/index.js;
