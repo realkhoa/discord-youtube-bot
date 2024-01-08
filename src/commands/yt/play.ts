@@ -33,6 +33,7 @@ module.exports = {
     ),
   // Change type to Message if u need to extend it
   async execute(interaction: any) {
+    await interaction.reply("Adding song...");
     const videoURL = interaction.options.getString("url");
     if (!!interaction.member?.voice.channel) {
       const channel = interaction.member.voice.channel;
@@ -41,8 +42,6 @@ module.exports = {
         guildId: channel.guild.id,
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
-
-      await interaction.reply("Adding song...");
 
       authPlaydl
         .stream(videoURL, {
@@ -79,10 +78,10 @@ module.exports = {
         })
         .catch((err: Error) => {
           console.log(err.message);
-          interaction.reply(err.message);
+          interaction.followUp(err.message);
         });
     } else {
-      await interaction.reply(
+      await interaction.followUp(
         "You must join voice channel to use this command!"
       );
     }
