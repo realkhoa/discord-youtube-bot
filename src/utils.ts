@@ -7,24 +7,14 @@ import {
 import { Message } from "discord.js";
 import playdl, { video_basic_info } from "play-dl";
 import loadConfig from "./config";
+import { IQueueData } from "./types/IQueueData";
+import { ISongData } from "./types/ISongData";
 
 playdl.setToken({
   youtube: {
-    cookie: loadConfig().youtubeCookies
-  }
-})
-
-export interface ISongData {
-  name: string | undefined;
-  url: string | undefined;
-  length: string | undefined;
-}
-
-export interface IQueueData {
-  resource: AudioResource;
-  player: AudioPlayer;
-  url: string;
-}
+    cookie: loadConfig().youtubeCookies,
+  },
+});
 
 export function startMusicPlayer(
   guid: string | undefined,
@@ -32,7 +22,7 @@ export function startMusicPlayer(
   interaction: Message
 ) {
   const client = interaction.client;
-  const queue = client.resourceQueues.get(guid);
+  const queue: Array<IQueueData> = client.resourceQueues.get(guid) || [];
 
   if (!queue || queue.length === 0) {
     interaction.channel.send(
@@ -42,14 +32,12 @@ export function startMusicPlayer(
     return;
   }
 
-  const { player, resource, url } = queue[0];
+  const { player, resource, url, title, duration } = queue[0];
 
   player.play(resource);
   connection.subscribe(player);
 
-  video_basic_info(url).then((data) => {
-    interaction.channel.send("Now playing: " + data.video_details.title);
-  });
+  interaction.channel.send("Now playing: " + title);
 
   player.once(AudioPlayerStatus.Paused, () => {
     queue.shift();
@@ -62,28 +50,16 @@ export function startMusicPlayer(
   }); // Handle next song
 }
 
-export async function getGuildQueue(
-  interaction: Message
-): Promise<Array<ISongData>> {
+export function getGuildQueue(interaction: Message): Array<ISongData> {
   const queue = interaction.client.resourceQueues.get(interaction.guild?.id);
 
-  const urls = queue?.map((e) => e.url);
-
-  if (!urls) return [];
-
-  const details = [];
-
-  for (let url of urls) {
-    let detail = await video_basic_info(url);
-
-    details.push({
-      url,
-      name: detail.video_details.title,
-      length: detail.video_details.durationRaw,
-    });
-  }
-
-  return details;
+  return queue?.map((e) => {
+    return {
+      url: e.url,
+      name: e.title,
+      length: e.duration,
+    };
+  }) as Array<ISongData>;
 }
 
 export function formatQueue(queue: Array<ISongData>): string {

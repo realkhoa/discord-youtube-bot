@@ -14,10 +14,7 @@ module.exports = {
       interaction.reply("Skipping...");
 
       if (queue && queue.length > 1) {
-        video_basic_info(queue[0].url).then((data) => {
-          interaction.followUp("Skipping " + data.video_details.title);
-        });
-
+        interaction.followUp("Skipping " + queue[0].title);
         queue[0].player.pause();
       } else {
         interaction.followUp(

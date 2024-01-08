@@ -4,12 +4,7 @@ import path from "node:path";
 
 import config from "./config";
 import { AudioPlayer, AudioResource } from "@discordjs/voice";
-
-interface IQueueData {
-  resource: AudioResource;
-  player: AudioPlayer;
-  url: string;
-}
+import { IQueueData } from "./types/IQueueData";
 
 declare module "discord.js" {
   export interface Client {
