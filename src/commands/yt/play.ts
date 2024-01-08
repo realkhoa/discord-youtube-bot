@@ -42,6 +42,8 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
+      interaction.reply("Adding song...")
+
       authPlaydl
         .stream(videoURL, {
           discordPlayerCompatibility: true,
@@ -50,7 +52,7 @@ module.exports = {
           // Get video Info
           authPlaydl.video_basic_info(videoURL)
             .then((data) => {
-              interaction.reply("Added " + data.video_details.title + " to queue")
+              interaction.followUp("Added " + data.video_details.title + " to queue")
             })
 
           const queue =
