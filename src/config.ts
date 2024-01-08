@@ -5,26 +5,32 @@ dotenv.config();
 export interface IEnvironmentData {
   token: string;
   applicationID: string;
-  botID: string
+  botID: string;
+  youtubeCookies: string;
 }
 
 export default function loadConfig(): IEnvironmentData {
   const token =
-    process.env.ENVIRONMENT === "PROD"
-      ? process.env.DISCORD_TOKEN!
-      : process.env.DISCORD_DEVELOPMENT_TOKEN!;
-      
+    (process.env.ENVIRONMENT === "PROD"
+      ? process.env.DISCORD_TOKEN
+      : process.env.DISCORD_DEVELOPMENT_TOKEN) || "";
+
   const applicationID =
-    process.env.ENVIRONMENT! === "PROD"
-      ? process.env.DISCORD_APPLICATION_ID!
-      : process.env.DISCORD_DEVELOPMENT_APPLICATION_ID!
+    (process.env.ENVIRONMENT! === "PROD"
+      ? process.env.DISCORD_APPLICATION_ID
+      : process.env.DISCORD_DEVELOPMENT_APPLICATION_ID) || "";
 
   const botID =
-    process.env.ENVIRONMENT! === "PROD"
-      ? process.env.DISCORD_BOT_ID!
-      : process.env.DISCORD_DEVELOPMENT_BOT_ID!
-      
+    (process.env.ENVIRONMENT! === "PROD"
+      ? process.env.DISCORD_BOT_ID
+      : process.env.DISCORD_DEVELOPMENT_BOT_ID) || "";
+
+  const youtubeCookies = process.env.YOUTUBE_COOKIES || "";
+
   return {
-    applicationID, token, botID
-  }
+    applicationID,
+    token,
+    botID,
+    youtubeCookies,
+  };
 }
