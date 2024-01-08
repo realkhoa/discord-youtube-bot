@@ -6,7 +6,7 @@ module.exports = {
     .setName("skip")
     .setDescription("Skip to next song"),
   async execute(interaction: any) {
-    interaction.reply("Skipping...");
+    await interaction.reply("Skipping...");
     if (!!interaction.member?.voice.channel) {
       const queue = interaction.client.resourceQueues.get(
         interaction.guild?.id
