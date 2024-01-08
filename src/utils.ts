@@ -5,7 +5,14 @@ import {
   VoiceConnection,
 } from "@discordjs/voice";
 import { Message } from "discord.js";
-import { video_basic_info } from "play-dl";
+import playdl, { video_basic_info } from "play-dl";
+import loadConfig from "./config";
+
+playdl.setToken({
+  youtube: {
+    cookie: loadConfig().youtubeCookies
+  }
+})
 
 export interface ISongData {
   name: string | undefined;
@@ -84,3 +91,5 @@ export function formatQueue(queue: Array<ISongData>): string {
     .map((e, index) => `${index}. [${e.name}](${e.url}) : ${e.length}`)
     .join("\n");
 }
+
+export const authPlaydl = playdl;

@@ -24,7 +24,8 @@ or
 npm start
 ```
 
-## Authentication for YouTube
+## Authentication for YouTube (Old, not recomend)
+Use [this](#authentication-for-youtube-new) instead
 
 If you want your bot to play videos with age restrictions, authenticate the YouTube service with the following command:
 
@@ -34,6 +35,17 @@ If you want your bot to play videos with age restrictions, authenticate the YouT
 
 Follow [this intruction](https://github.com/play-dl/play-dl/tree/main/instructions) to complete the process.
 ***Note:*** You are only able to authenticate with YouTube because I was too lazy to set up the other two services.
+
+## Authentication for YouTube (New)
+
+Add this line to your `.env` file:
+```js
+...
+YOUTUBE_COOKIES=[Cookies]
+...
+```
+
+Follow [this intruction](https://github.com/play-dl/play-dl/tree/main/instructions) to get your youtube cookies.
 ## For Developer
 
 The `.env` file for development is a bit different:

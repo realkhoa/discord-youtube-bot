@@ -12,9 +12,8 @@ import {
   Interaction,
   InteractionType,
 } from "discord.js";
-import playdl, { video_basic_info } from "play-dl";
 
-import { startMusicPlayer, getGuildQueue } from "../../utils";
+import { startMusicPlayer, getGuildQueue, authPlaydl } from "../../utils";
 
 export interface ISongData {
   name: string | undefined;
@@ -43,13 +42,13 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
-      playdl
+      authPlaydl
         .stream(videoURL, {
           discordPlayerCompatibility: true,
         })
         .then((stream) => {
           // Get video Info
-          video_basic_info(videoURL)
+          authPlaydl.video_basic_info(videoURL)
             .then((data) => {
               interaction.reply("Added " + data.video_details.title + " to queue")
             })
@@ -68,7 +67,7 @@ module.exports = {
         })
         .catch((err: Error) => {
           console.log(err.message);
-          interaction.channel.send(err.message);
+          interaction.reply(err.message);
         });
     } else {
       interaction.reply(
