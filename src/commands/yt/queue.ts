@@ -7,20 +7,18 @@ module.exports = {
     .setName("queue")
     .setDescription("Get guild queue"),
   async execute(interaction: any) {
+    await interaction.reply("Getting queue...");
     if (!!interaction.member?.voice.channel) {
       const queue = interaction.client.resourceQueues.get(
         interaction.guild?.id
       );
-
-      await interaction.reply("Getting queue...");
-
       if (queue && queue.length > 1) {
           interaction.followUp("Current queue: \n" + formatQueue(getGuildQueue(interaction)));
       } else {
         interaction.followUp("Empty queue.");
       }
     } else {
-      interaction.reply("You must join voice channel to use this command!");
+      interaction.followUp("You must join voice channel to use this command!");
     }
   },
 };

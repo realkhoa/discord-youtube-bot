@@ -6,13 +6,11 @@ module.exports = {
     .setName("skip")
     .setDescription("Skip to next song"),
   async execute(interaction: any) {
+    interaction.reply("Skipping...");
     if (!!interaction.member?.voice.channel) {
       const queue = interaction.client.resourceQueues.get(
         interaction.guild?.id
       );
-
-      interaction.reply("Skipping...");
-
       if (queue && queue.length > 1) {
         interaction.followUp("Skipping " + queue[0].title);
         queue[0].player.pause();
@@ -22,7 +20,7 @@ module.exports = {
         );
       }
     } else {
-      interaction.reply("You must join voice channel to use this command!");
+      interaction.followUp("You must join voice channel to use this command!");
     }
   },
 };
