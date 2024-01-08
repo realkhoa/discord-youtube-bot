@@ -11,11 +11,11 @@ DISCORD_APPLICATION_ID=[YOUR_APPLICATION_ID]
 DISCORD_BOT_ID=[BOT_ID]
 ```
 
-For `Token` and `ApplicationID`, you can get it via [Discord Developer Portal](https://discord.com/developers/docs/intro). You can follow [this](https://discordjs.guide) guide for more information.
+For `Token` and `ApplicationID`, you can get it via [Discord Developer Portal](https://discord.com/developers/docs/intro). Refer to [this guide](https://discordjs.guide) for more information.
 
-For `BotID`, you can right click to your bot -> `Copy User ID`.   
+For `BotID`, right click on your bot and select `Copy User ID`.   
 
-Then simply run this command:   
+Run the following command:  
 ```bash
 yarn start
 ```
@@ -24,9 +24,19 @@ or
 npm start
 ```
 
+## Authentication for YouTube
+
+If you want your bot to play videos with age restrictions, authenticate the YouTube service with the following command:
+
+```bash
+  yarn setup
+```
+
+Follow [this intruction](https://github.com/play-dl/play-dl/tree/main/instructions) to complete the process.
+***Note:*** You are only able to authenticate with YouTube because I was too lazy to set up the other two services.
 ## For Developer
 
-.env file is a bit different:
+The `.env` file for development is a bit different:
 ```js
 DISCORD_TOKEN=[YOUR_BOT_TOKEN]
 DISCORD_APPLICATION_ID=[YOUR_APPLICATION_ID]
@@ -37,7 +47,7 @@ DISCORD_DEVELOPMENT_APPLICATION_ID=[YOUR_DEV_APPLICATION_ID]
 DISCORD_DEVELOPMENT_BOT_ID=[BOT_DEV_ID]
 ```
 
-Then you could start development server by using following command:
+Start the development server with the following command:
 ```bash
 yarn dev
 ```
@@ -47,7 +57,7 @@ or
 npm run dev
 ```
 
-Remember to install all dependencies by using:
+Ensure all dependencies are installed:
 ```bash
 yarn install
 ```
@@ -57,7 +67,7 @@ or
 npm install
 ```
 
-This project use yarn as package manager from start, so I highly recommend using yarn.
+This project uses yarn as the package manager, so it is highly recommended to use yarn.
 
 ## For who using pm2
 
