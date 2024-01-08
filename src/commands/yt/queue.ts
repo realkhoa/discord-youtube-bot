@@ -12,12 +12,10 @@ module.exports = {
         interaction.guild?.id
       );
 
-      interaction.reply("Getting queue...");
+      await interaction.reply("Getting queue...");
 
       if (queue && queue.length > 1) {
-        getGuildQueue(interaction).then((guildQueue) => {
-          interaction.followUp("Current queue: \n" + formatQueue(guildQueue));
-        });
+          interaction.followUp("Current queue: \n" + formatQueue(getGuildQueue(interaction)));
       } else {
         interaction.followUp("Empty queue.");
       }

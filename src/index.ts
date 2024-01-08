@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 
 import config from './config'
-import { IQueueData } from "./utils";
+import { IQueueData } from "./types/IQueueData";
 
 // Manipulate Client of discord.js. Fk ts
 declare module 'discord.js' {

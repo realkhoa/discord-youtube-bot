@@ -42,7 +42,7 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
-      interaction.reply("Adding song...")
+      await interaction.reply("Adding song...")
 
       authPlaydl
         .stream(videoURL, {
@@ -72,7 +72,7 @@ module.exports = {
           interaction.reply(err.message);
         });
     } else {
-      interaction.reply(
+      await interaction.reply(
         "You must join voice channel to use this command!"
       );
     }
