@@ -31,7 +31,7 @@ module.exports = {
         .setDescription("Youtube or Soundcloud")
         .setRequired(true)
     ),
-    // Change type to Message if u need to extend it
+  // Change type to Message if u need to extend it
   async execute(interaction: any) {
     const videoURL = interaction.options.getString("url");
     if (!!interaction.member?.voice.channel) {
@@ -42,7 +42,7 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
-      await interaction.reply("Adding song...")
+      await interaction.reply("Adding song...");
 
       authPlaydl
         .stream(videoURL, {
@@ -50,22 +50,32 @@ module.exports = {
         })
         .then((stream) => {
           // Get video Info
-          authPlaydl.video_basic_info(videoURL)
-            .then((data) => {
-              interaction.followUp("Added " + data.video_details.title + " to queue")
-            })
+          authPlaydl.video_basic_info(videoURL).then((data) => {
+            interaction.followUp(
+              "Added " + data.video_details.title + " to queue"
+            );
 
-          const queue =
-            interaction.client.resourceQueues.get(interaction.guild?.id) || [];
-          const player = createAudioPlayer();
-          const resource = createAudioResource(stream.stream);
+            const queue =
+              interaction.client.resourceQueues.get(interaction.guild?.id) ||
+              [];
+            const player = createAudioPlayer();
+            const resource = createAudioResource(stream.stream);
 
-          queue.push({ resource, player, url: videoURL });
-          interaction.client.resourceQueues.set(interaction.guild?.id, queue);
+            queue.push({
+              resource,
+              player,
+              url: videoURL,
+              title: data.video_details.title,
+              duration: data.video_details.durationRaw,
+            });
+            
+            interaction.client.resourceQueues.set(interaction.guild?.id, queue);
 
-          if (queue.length == 1) { // Only start new player when queue is empty
-            startMusicPlayer(interaction.guild?.id, connection, interaction);
-          }
+            if (queue.length == 1) {
+              // Only start new player when queue is empty
+              startMusicPlayer(interaction.guild?.id, connection, interaction);
+            }
+          });
         })
         .catch((err: Error) => {
           console.log(err.message);
