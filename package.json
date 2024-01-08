@@ -25,6 +25,7 @@
   },
   "scripts": {
     "dev": "nodemon ./src/index.ts",
-    "start": "sh ./scripts/run.prod.sh"
+    "start": "sh ./scripts/run.prod.sh",
+    "setup": "sh ./scripts/setup.credentials.sh"
   }
 }
