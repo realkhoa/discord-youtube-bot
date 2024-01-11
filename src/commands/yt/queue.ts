@@ -1,6 +1,5 @@
 import { SlashCommandBuilder, Interaction } from "discord.js";
-import { video_basic_info } from "play-dl";
-import { formatQueue, getGuildQueue } from "../../utils";
+import { formatQueue, getGuildQueue } from "../../utils/queue";
 
 module.exports = {
   data: new SlashCommandBuilder()

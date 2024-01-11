@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "Checking for update"
+git pull
+
 echo "Preparing environment variables";
 export ENVIRONMENT=PROD;
 
