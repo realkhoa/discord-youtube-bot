@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 import config from "./config";
-import { AudioPlayer, AudioResource } from "@discordjs/voice";
 import { IQueueData } from "./types/IQueueData";
 
 declare module "discord.js" {
@@ -53,6 +52,11 @@ const rest = new REST().setToken(config().token);
       Routes.applicationCommands(config().applicationID),
       { body: commands }
     );
+
+    const testGuildData = await rest.put(
+			Routes.applicationGuildCommands(config().applicationID, config().discordTestGuild),
+			{ body: commands },
+		);
 
     console.log(
       `Successfully reloaded ${data.length} application (/) commands.`

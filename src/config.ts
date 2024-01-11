@@ -7,6 +7,7 @@ export interface IEnvironmentData {
   applicationID: string;
   botID: string;
   youtubeCookies: string;
+  discordTestGuild: string;
 }
 
 export default function loadConfig(): IEnvironmentData {
@@ -27,10 +28,13 @@ export default function loadConfig(): IEnvironmentData {
 
   const youtubeCookies = process.env.YOUTUBE_COOKIES || "";
 
+  const discordTestGuild = process.env.DISCORD_TEST_GUILD || "";
+
   return {
     applicationID,
     token,
     botID,
     youtubeCookies,
+    discordTestGuild
   };
 }
