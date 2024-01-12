@@ -53,11 +53,6 @@ const rest = new REST().setToken(config().token);
       { body: commands }
     );
 
-    const testGuildData = await rest.put(
-			Routes.applicationGuildCommands(config().applicationID, config().discordTestGuild),
-			{ body: commands },
-		);
-
     console.log(
       `Successfully reloaded ${data.length} application (/) commands.`
     );

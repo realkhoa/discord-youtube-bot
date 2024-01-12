@@ -9,7 +9,6 @@ playdl.setToken({
   },
 });
 
-
 export async function addToQueue(interaction: any, videoURL: string) {
   const stream = await playdl
     .stream(videoURL, {
@@ -32,6 +31,27 @@ export async function addToQueue(interaction: any, videoURL: string) {
   interaction.client.resourceQueues.set(interaction.guild?.id, queue);
 
   return vidInfo.video_details.title;
+}
+
+export async function addToQueueWithDetail(interaction: any, songData: ISongData) {
+  const stream = await playdl
+    .stream(songData.url || "", {
+      discordPlayerCompatibility: true,
+    })
+
+  const queue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
+  const player = createAudioPlayer();
+  const resource = createAudioResource(stream.stream);
+
+  queue.push({
+    resource,
+    player,
+    url: songData.url,
+    title: songData.name,
+    duration: songData.length,
+  });
+
+  interaction.client.resourceQueues.set(interaction.guild?.id, queue);
 }
 
 export async function getPlaylistVideos(url: string) {
