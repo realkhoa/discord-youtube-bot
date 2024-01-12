@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, Message } from "discord.js";
-import { addToQueue, getPlaylistVideos } from "../../utils/playdlAPI";
+import { addToQueue, addToQueueWithDetail, getPlaylistVideos } from "../../utils/playdlAPI";
 import { joinVoiceChannel } from "@discordjs/voice";
 import startMusicPlayer from "../../utils/startMusicPlayer";
 
@@ -30,19 +30,18 @@ module.exports = {
         const playlistURL = await interaction.options.getString("url");
         const videos = await getPlaylistVideos(playlistURL);
 
-        const bulkQueue = videos.map(async (e) => addToQueue(interaction, e.url || ""));
+        const bulkQueue = videos.map(async (e) => addToQueueWithDetail(interaction, e));
 
-        Promise.all(bulkQueue)
-          .then((data) => {
-            interaction.followUp(
-              "Added " + videos.length + " videos to queue"
-            );
+        await Promise.all(bulkQueue)
 
-            if (isNewQueue) {
-              // Only start new player when queue is empty
-              startMusicPlayer(interaction.guild?.id, connection, interaction);
-            }
-          })
+        interaction.followUp(
+          "Added " + videos.length + " videos to queue"
+        );
+        
+        if (isNewQueue) {
+          // Only start new player when queue is empty
+          startMusicPlayer(interaction.guild?.id, connection, interaction);
+        }
       } catch (error: any) {
         await interaction.followUp(error.message);
       }
