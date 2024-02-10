@@ -16,6 +16,7 @@
     "moment": "^2.30.1",
     "nodemon": "^3.0.2",
     "play-dl": "^1.9.7",
+    "promised-sqlite3": "^2.1.0",
     "reconlx": "^2.5.6",
     "scdl-core": "^1.1.0",
     "sqlite3": "^5.1.7-rc.0",
@@ -24,7 +25,7 @@
     "ytsr": "^3.8.4"
   },
   "scripts": {
-    "dev": "nodemon ./src/index.ts",
+    "dev": "ts-node ./src/prepareDatabase && nodemon ./src/index.ts",
     "start": "sh ./scripts/run.prod.sh",
     "setup": "sh ./scripts/setup.credentials.sh"
   }

@@ -1,8 +1,10 @@
-import { SlashCommandBuilder, Message } from "discord.js";
-import { addToQueue, addToQueueWithDetail, getPlaylistVideos } from "../../utils/playdlAPI";
+import { SlashCommandBuilder } from "discord.js";
+import { addToQueue, getPlaylistVideos } from "../../utils/playdlAPI";
 import { joinVoiceChannel } from "@discordjs/voice";
-import startMusicPlayer from "../../utils/startMusicPlayer";
+import startMusicPlayer from "../../utils/musicPlayer";
 import awaiter from "../../utils/awaiter";
+
+import * as db from "../../utils/db";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -22,36 +24,37 @@ module.exports = {
       return;
     }
 
-      const channel = interaction.member.voice.channel;
-      const connection = joinVoiceChannel({
-        channelId: channel.id,
-        guildId: channel.guild.id,
-        adapterCreator: channel.guild.voiceAdapterCreator,
-      });
+    const botVcID = interaction.guild?.members.me?.voice.channelId;
+    const channel = interaction.member.voice.channel;
+    const connection = joinVoiceChannel({
+      channelId: channel.id,
+      guildId: channel.guild.id,
+      adapterCreator: channel.guild.voiceAdapterCreator,
+    });
 
-      const oldQueue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
-      const isNewQueue = oldQueue == 0;
-      const playlistURL = await interaction.options.getString("url");
+    const oldQueue = (await db.getQueue(interaction.guild?.id)) || [];
+    const isNewQueue = oldQueue == null;
+    const playlistURL = await interaction.options.getString("url");
 
-      const [videos, getPlayListVideoError] = await awaiter(getPlaylistVideos(playlistURL));
+    const [videos, getPlayListVideoError] = await awaiter(
+      getPlaylistVideos(playlistURL)
+    );
 
-      if (getPlayListVideoError) {
-        await interaction.followUp(getPlayListVideoError.message);
+    if (getPlayListVideoError) {
+      await interaction.followUp(getPlayListVideoError.message);
 
-        return;
-      }
+      return;
+    }
 
-      const bulkQueue = videos!.map(async (e) => addToQueueWithDetail(interaction, e));
+    const bulkQueue = videos!.map(async (e) => addToQueue(interaction, e.src!));
 
-      await Promise.all(bulkQueue)
+    await Promise.all(bulkQueue);
 
-      interaction.followUp(
-        "Added " + videos!.length + " videos to queue"
-      );
+    interaction.followUp("Added " + videos!.length + " videos to queue");
 
-      // Only start new player when queue is empty
-      if (isNewQueue) {
-        startMusicPlayer(interaction.guild?.id, connection, interaction);
-      }
+    // Only start new player when queue is empty
+    if (isNewQueue || !botVcID) {
+      startMusicPlayer(interaction.guild?.id, connection, interaction);
+    }
   },
 };

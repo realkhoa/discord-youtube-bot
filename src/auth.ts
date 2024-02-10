@@ -1,3 +1,3 @@
-const play = require('play-dl');
+const play = require("play-dl");
 
 play.authorization();
