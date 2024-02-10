@@ -11,7 +11,7 @@ module.exports = {
       const queue = interaction.client.resourceQueues.get(
         interaction.guild?.id
       );
-      if (queue && queue.length > 1) {
+      if (queue && queue.length >= 1) {
         interaction.followUp("Skipping " + queue[0].title);
         queue[0].player.pause();
       } else {

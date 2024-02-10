@@ -2,6 +2,7 @@ import { SlashCommandBuilder, Message } from "discord.js";
 import { addToQueue, addToQueueWithDetail, getPlaylistVideos } from "../../utils/playdlAPI";
 import { joinVoiceChannel } from "@discordjs/voice";
 import startMusicPlayer from "../../utils/startMusicPlayer";
+import awaiter from "../../utils/awaiter";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,7 +16,12 @@ module.exports = {
     ),
   async execute(interaction: any) {
     await interaction.reply("Getting playlist info...");
-    if (!!interaction.member?.voice.channel) {
+
+    if (!interaction.member?.voice.channel) {
+      interaction.followUp("You must join voice channel to use this command!");
+      return;
+    }
+
       const channel = interaction.member.voice.channel;
       const connection = joinVoiceChannel({
         channelId: channel.id,
@@ -23,30 +29,29 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
-      try {
-        const oldQueue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
-        const isNewQueue = oldQueue == 0;
+      const oldQueue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
+      const isNewQueue = oldQueue == 0;
+      const playlistURL = await interaction.options.getString("url");
 
-        const playlistURL = await interaction.options.getString("url");
-        const videos = await getPlaylistVideos(playlistURL);
+      const [videos, getPlayListVideoError] = await awaiter(getPlaylistVideos(playlistURL));
 
-        const bulkQueue = videos.map(async (e) => addToQueueWithDetail(interaction, e));
+      if (getPlayListVideoError) {
+        await interaction.followUp(getPlayListVideoError.message);
 
-        await Promise.all(bulkQueue)
-
-        interaction.followUp(
-          "Added " + videos.length + " videos to queue"
-        );
-        
-        if (isNewQueue) {
-          // Only start new player when queue is empty
-          startMusicPlayer(interaction.guild?.id, connection, interaction);
-        }
-      } catch (error: any) {
-        await interaction.followUp(error.message);
+        return;
       }
-    } else {
-      interaction.followUp("You must join voice channel to use this command!");
-    }
+
+      const bulkQueue = videos!.map(async (e) => addToQueueWithDetail(interaction, e));
+
+      await Promise.all(bulkQueue)
+
+      interaction.followUp(
+        "Added " + videos!.length + " videos to queue"
+      );
+
+      // Only start new player when queue is empty
+      if (isNewQueue) {
+        startMusicPlayer(interaction.guild?.id, connection, interaction);
+      }
   },
 };
