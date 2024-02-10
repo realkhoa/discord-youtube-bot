@@ -7,6 +7,7 @@ export interface IEnvironmentData {
   applicationID: string;
   botID: string;
   youtubeCookies: string;
+  databasePath: string;
 }
 
 export default function loadConfig(): IEnvironmentData {
@@ -27,10 +28,16 @@ export default function loadConfig(): IEnvironmentData {
 
   const youtubeCookies = process.env.YOUTUBE_COOKIES || "";
 
+  const databasePath =
+    process.env.ENVIRONMENT! === "PROD"
+      ? "./.database/db.db"
+      : "./.database/db_dev.db";
+
   return {
     applicationID,
     token,
     botID,
-    youtubeCookies
+    youtubeCookies,
+    databasePath,
   };
 }

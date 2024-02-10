@@ -1,5 +1,5 @@
 export interface ISongData {
-  name: string | undefined;
-  url: string | undefined;
-  length: string | undefined;
+  title: string | undefined;
+  src: string | undefined;
+  duration: string | undefined;
 }

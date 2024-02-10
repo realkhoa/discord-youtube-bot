@@ -12,12 +12,13 @@ import path from "path";
 
 import config from "./config";
 import { IQueueData } from "./types/IQueueData";
+import { AudioPlayer } from "@discordjs/voice";
 
 // Manipulate Client of discord.js. Fk ts
 declare module "discord.js" {
   export interface Client {
     commands: Collection<unknown, any>;
-    resourceQueues: Map<string | undefined, Array<IQueueData>>;
+    audioPlayerList: Map<string, AudioPlayer>;
   }
 }
 
@@ -30,8 +31,6 @@ const client = new Client({
     IntentsBitField.Flags.GuildVoiceStates,
   ],
 });
-
-client.resourceQueues = new Map();
 
 // Registering Slash Command
 client.commands = new Collection();
@@ -56,6 +55,8 @@ for (const folder of commandFolders) {
     }
   }
 }
+
+client.audioPlayerList = new Map();
 
 // Set bot status
 client.once(Events.ClientReady, () => {

@@ -1,7 +1,9 @@
 import { createAudioPlayer, createAudioResource } from "@discordjs/voice";
 import loadConfig from "../config";
-import playdl from "play-dl";
+import playdl, { YouTubeStream } from "play-dl";
 import { ISongData } from "../types/ISongData";
+
+import * as db from "./db";
 
 playdl.setToken({
   youtube: {
@@ -10,48 +12,18 @@ playdl.setToken({
 });
 
 export async function addToQueue(interaction: any, videoURL: string) {
-  const stream = await playdl
-    .stream(videoURL, {
-      discordPlayerCompatibility: true,
-    })
+  const vidInfo = await playdl.video_basic_info(videoURL);
 
-  const vidInfo = await playdl.video_basic_info(videoURL)
-  const queue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
-  const player = createAudioPlayer();
-  const resource = createAudioResource(stream.stream);
-
-  queue.push({
-    resource,
-    player,
-    url: videoURL,
-    title: vidInfo.video_details.title,
-    duration: vidInfo.video_details.durationRaw,
-  });
-
-  interaction.client.resourceQueues.set(interaction.guild?.id, queue);
+  db.addToQueue(
+    {
+      src: videoURL,
+      title: vidInfo.video_details.title,
+      duration: vidInfo.video_details.durationRaw,
+    },
+    interaction.member.voice.channel.guild.id
+  );
 
   return vidInfo.video_details.title;
-}
-
-export async function addToQueueWithDetail(interaction: any, songData: ISongData) {
-  const stream = await playdl
-    .stream(songData.url || "", {
-      discordPlayerCompatibility: true,
-    })
-
-  const queue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
-  const player = createAudioPlayer();
-  const resource = createAudioResource(stream.stream);
-
-  queue.push({
-    resource,
-    player,
-    url: songData.url,
-    title: songData.name,
-    duration: songData.length,
-  });
-
-  interaction.client.resourceQueues.set(interaction.guild?.id, queue);
 }
 
 export async function getPlaylistVideos(url: string) {
@@ -60,9 +32,19 @@ export async function getPlaylistVideos(url: string) {
 
   return videos.map((e) => {
     return {
-      url: e.url,
-      name: e.title,
-      length: e.durationRaw,
+      src: e.url,
+      title: e.title,
+      duration: e.durationRaw,
     };
   }) as Array<ISongData>;
+}
+
+export async function getStream(
+  src: string | undefined
+): Promise<YouTubeStream> {
+  const stream = await playdl.stream(src || "", {
+    discordPlayerCompatibility: true,
+  });
+
+  return stream;
 }

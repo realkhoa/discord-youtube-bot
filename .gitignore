@@ -131,3 +131,4 @@ dist
 
 # play-dl credentials
 .data
+.database

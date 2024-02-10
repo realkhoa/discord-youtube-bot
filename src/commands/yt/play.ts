@@ -2,8 +2,10 @@ import { joinVoiceChannel } from "@discordjs/voice";
 import { SlashCommandBuilder } from "discord.js";
 
 import { addToQueue } from "../../utils/playdlAPI";
-import startMusicPlayer from "../../utils/startMusicPlayer";
+import startMusicPlayer from "../../utils/musicPlayer";
 import awaiter from "../../utils/awaiter";
+
+import * as db from "../../utils/db";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,6 +29,7 @@ module.exports = {
       return;
     }
 
+    const botVcID = interaction.guild?.members.me?.voice.channelId;
     const channel = interaction.member.voice.channel;
     const connection = joinVoiceChannel({
       channelId: channel.id,
@@ -34,20 +37,21 @@ module.exports = {
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
 
+    const isEmptyQueue = await db.isEmptyQueue(channel.guild.id);
+
     const videoURL = await interaction.options.getString("url");
-    const [videoTitle, addQueueError] = await awaiter(addToQueue(interaction, videoURL));
+    const [videoTitle, addQueueError] = await awaiter(
+      addToQueue(interaction, videoURL)
+    );
 
     if (addQueueError) {
       await interaction.followUp(addQueueError.message);
-      return
+    } else {
+      await interaction.followUp("Added " + videoTitle + " to queue");
     }
 
-    const queue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
-
-    await interaction.followUp("Added " + videoTitle + " to queue");
-
-    // Only start new player when queue is empty
-    if (queue.length == 1) {
+    // Only start new player when queue is empty or bot not join voice channel yet
+    if (isEmptyQueue || !botVcID) {
       startMusicPlayer(interaction.guild?.id, connection, interaction);
     }
   },
