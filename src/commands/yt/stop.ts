@@ -14,7 +14,6 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
-      interaction.client.resourceQueues.delete(interaction.guild?.id);
       connection.disconnect();
       interaction.reply("Stopped!");
     } else {

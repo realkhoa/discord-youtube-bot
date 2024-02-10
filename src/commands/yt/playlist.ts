@@ -1,7 +1,10 @@
-import { SlashCommandBuilder, Message } from "discord.js";
-import { addToQueue, addToQueueWithDetail, getPlaylistVideos } from "../../utils/playdlAPI";
+import { SlashCommandBuilder } from "discord.js";
+import { addToQueue, getPlaylistVideos } from "../../utils/playdlAPI";
 import { joinVoiceChannel } from "@discordjs/voice";
-import startMusicPlayer from "../../utils/startMusicPlayer";
+import startMusicPlayer from "../../utils/musicPlayer";
+import awaiter from "../../utils/awaiter";
+
+import * as db from "../../utils/db";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,38 +18,43 @@ module.exports = {
     ),
   async execute(interaction: any) {
     await interaction.reply("Getting playlist info...");
-    if (!!interaction.member?.voice.channel) {
-      const channel = interaction.member.voice.channel;
-      const connection = joinVoiceChannel({
-        channelId: channel.id,
-        guildId: channel.guild.id,
-        adapterCreator: channel.guild.voiceAdapterCreator,
-      });
 
-      try {
-        const oldQueue = await interaction.client.resourceQueues.get(interaction.guild?.id) || [];
-        const isNewQueue = oldQueue == 0;
-
-        const playlistURL = await interaction.options.getString("url");
-        const videos = await getPlaylistVideos(playlistURL);
-
-        const bulkQueue = videos.map(async (e) => addToQueueWithDetail(interaction, e));
-
-        await Promise.all(bulkQueue)
-
-        interaction.followUp(
-          "Added " + videos.length + " videos to queue"
-        );
-        
-        if (isNewQueue) {
-          // Only start new player when queue is empty
-          startMusicPlayer(interaction.guild?.id, connection, interaction);
-        }
-      } catch (error: any) {
-        await interaction.followUp(error.message);
-      }
-    } else {
+    if (!interaction.member?.voice.channel) {
       interaction.followUp("You must join voice channel to use this command!");
+      return;
+    }
+
+    const botVcID = interaction.guild?.members.me?.voice.channelId;
+    const channel = interaction.member.voice.channel;
+    const connection = joinVoiceChannel({
+      channelId: channel.id,
+      guildId: channel.guild.id,
+      adapterCreator: channel.guild.voiceAdapterCreator,
+    });
+
+    const oldQueue = (await db.getQueue(interaction.guild?.id)) || [];
+    const isNewQueue = oldQueue == null;
+    const playlistURL = await interaction.options.getString("url");
+
+    const [videos, getPlayListVideoError] = await awaiter(
+      getPlaylistVideos(playlistURL)
+    );
+
+    if (getPlayListVideoError) {
+      await interaction.followUp(getPlayListVideoError.message);
+
+      return;
+    }
+
+    const bulkQueue = videos!.map(async (e) => addToQueue(interaction, e.src!));
+
+    await Promise.all(bulkQueue);
+
+    interaction.followUp("Added " + videos!.length + " videos to queue");
+
+    // Only start new player when queue is empty
+    if (isNewQueue || !botVcID) {
+      startMusicPlayer(interaction.guild?.id, connection, interaction);
     }
   },
 };
