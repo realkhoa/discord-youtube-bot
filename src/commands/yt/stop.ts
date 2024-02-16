@@ -1,5 +1,6 @@
 import { joinVoiceChannel } from "@discordjs/voice";
 import { SlashCommandBuilder, Message } from "discord.js";
+import { stopMusicPlayer } from "../../utils/musicPlayer";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,6 +15,7 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
+      stopMusicPlayer(interaction);
       connection.disconnect();
       interaction.reply("Stopped!");
     } else {

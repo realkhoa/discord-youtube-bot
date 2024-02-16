@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { addToQueue, getPlaylistVideos } from "../../utils/playdlAPI";
 import { joinVoiceChannel } from "@discordjs/voice";
-import startMusicPlayer from "../../utils/musicPlayer";
+import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer";
 import awaiter from "../../utils/awaiter";
 
 import * as db from "../../utils/db";
@@ -33,7 +33,6 @@ module.exports = {
     });
 
     const oldQueue = (await db.getQueue(interaction.guild?.id)) || [];
-    const isNewQueue = oldQueue == null;
     const playlistURL = await interaction.options.getString("url");
 
     const [videos, getPlayListVideoError] = await awaiter(
@@ -52,8 +51,7 @@ module.exports = {
 
     interaction.followUp("Added " + videos!.length + " videos to queue");
 
-    // Only start new player when queue is empty
-    if (isNewQueue || !botVcID) {
+    if (await canStartNewPlayer(interaction)) {
       startMusicPlayer(interaction.guild?.id, connection, interaction);
     }
   },

@@ -2,7 +2,7 @@ import { joinVoiceChannel } from "@discordjs/voice";
 import { SlashCommandBuilder } from "discord.js";
 
 import { addToQueue } from "../../utils/playdlAPI";
-import startMusicPlayer from "../../utils/musicPlayer";
+import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer";
 import awaiter from "../../utils/awaiter";
 
 import * as db from "../../utils/db";
@@ -29,15 +29,12 @@ module.exports = {
       return;
     }
 
-    const botVcID = interaction.guild?.members.me?.voice.channelId;
     const channel = interaction.member.voice.channel;
     const connection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
-
-    const isEmptyQueue = await db.isEmptyQueue(channel.guild.id);
 
     const videoURL = await interaction.options.getString("url");
     const [videoTitle, addQueueError] = await awaiter(
@@ -50,8 +47,7 @@ module.exports = {
       await interaction.followUp("Added " + videoTitle + " to queue");
     }
 
-    // Only start new player when queue is empty or bot not join voice channel yet
-    if (isEmptyQueue || !botVcID) {
+    if (await canStartNewPlayer(interaction)) {
       startMusicPlayer(interaction.guild?.id, connection, interaction);
     }
   },

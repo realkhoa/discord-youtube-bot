@@ -17,11 +17,37 @@ export async function getGuildAudioPlayer(interaction: Message) {
   return player;
 }
 
+export async function dropAudioPlayer(interaction: Message) {
+  interaction.client.audioPlayerList.delete(interaction.guild?.id || "");
+}
+
 export async function setGuildAudioPlayer(
   interaction: Message,
   player: AudioPlayer
 ) {
   interaction.client.audioPlayerList.set(interaction.guild?.id || "", player);
+}
+
+export async function canStartNewPlayer(interaction: Message) {
+  const botVcID = interaction.guild?.members.me?.voice.channelId;
+  const audioPlayer = await getGuildAudioPlayer(interaction);
+
+  if (!audioPlayer) return true; // Audio player has not been created yet
+  if (botVcID) return true; // Bot is in voice channel
+
+  const playerStatus = audioPlayer.state.status;
+  
+  if (
+    playerStatus == AudioPlayerStatus.Paused ||
+    playerStatus == AudioPlayerStatus.Idle &&
+    botVcID
+  ) { // Player is idle and bot is in voice channel
+    return true;
+  }
+
+  const isEmptyQueue = await db.isEmptyQueue(interaction.guild?.id || "");
+  if (isEmptyQueue) return true; // Empty queue
+  return false;
 }
 
 export default async function startMusicPlayer(
@@ -59,4 +85,9 @@ export default async function startMusicPlayer(
     await db.shiftQueue(guid);
     startMusicPlayer(guid, connection, interaction);
   }); // Handle next song
+}
+
+export async function stopMusicPlayer(interaction: Message) {
+  await db.clearQueue(interaction.guild?.id || "");
+  dropAudioPlayer(interaction);
 }
