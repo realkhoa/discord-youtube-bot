@@ -33,20 +33,19 @@ export async function canStartNewPlayer(interaction: Message) {
   const audioPlayer = await getGuildAudioPlayer(interaction);
 
   if (!audioPlayer) return true; // Audio player has not been created yet
-  if (botVcID) return true; // Bot is in voice channel
 
   const playerStatus = audioPlayer.state.status;
   
   if (
-    playerStatus == AudioPlayerStatus.Paused ||
-    playerStatus == AudioPlayerStatus.Idle &&
+    (playerStatus == AudioPlayerStatus.Paused ||
+    playerStatus == AudioPlayerStatus.Idle) &&
     botVcID
   ) { // Player is idle and bot is in voice channel
     return true;
   }
 
   const isEmptyQueue = await db.isEmptyQueue(interaction.guild?.id || "");
-  if (isEmptyQueue) return true; // Empty queue
+  if (isEmptyQueue && botVcID) return true; // Empty queue
   return false;
 }
 
