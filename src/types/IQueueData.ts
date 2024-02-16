@@ -5,5 +5,5 @@ export interface IQueueData {
   player: AudioPlayer;
   url: string;
   title?: string;
-  duration?: string
+  duration?: string;
 }

@@ -3,12 +3,12 @@ import fs from "node:fs";
 import path from "node:path";
 
 import config from "./config";
-import { IQueueData } from "./types/IQueueData";
+import { AudioPlayer } from "@discordjs/voice";
 
 declare module "discord.js" {
   export interface Client {
     commands: Collection<unknown, any>;
-    resourceQueues: Map<string | undefined, Array<IQueueData>>;
+    audioPlayerList: Map<string, AudioPlayer>;
   }
 }
 
