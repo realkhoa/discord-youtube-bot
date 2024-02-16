@@ -17,6 +17,10 @@ export async function getGuildAudioPlayer(interaction: Message) {
   return player;
 }
 
+export async function dropAudioPlayer(interaction: Message) {
+  interaction.client.audioPlayerList.delete(interaction.guild?.id || "");
+}
+
 export async function setGuildAudioPlayer(
   interaction: Message,
   player: AudioPlayer
@@ -81,4 +85,9 @@ export default async function startMusicPlayer(
     await db.shiftQueue(guid);
     startMusicPlayer(guid, connection, interaction);
   }); // Handle next song
+}
+
+export async function stopMusicPlayer(interaction: Message) {
+  await db.clearQueue(interaction.guild?.id || "");
+  dropAudioPlayer(interaction);
 }

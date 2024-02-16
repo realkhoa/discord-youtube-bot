@@ -33,7 +33,6 @@ module.exports = {
     });
 
     const oldQueue = (await db.getQueue(interaction.guild?.id)) || [];
-    const isNewQueue = oldQueue == null;
     const playlistURL = await interaction.options.getString("url");
 
     const [videos, getPlayListVideoError] = await awaiter(
