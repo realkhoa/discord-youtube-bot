@@ -131,4 +131,6 @@ dist
 
 # play-dl credentials
 .data
+
+# bot database
 .database
