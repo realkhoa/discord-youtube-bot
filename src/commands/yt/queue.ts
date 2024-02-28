@@ -1,5 +1,7 @@
-import { SlashCommandBuilder, Interaction } from "discord.js";
-import { formatQueue, getGuildQueue } from "../../utils/queue";
+import { SlashCommandBuilder } from "discord.js";
+import { formatQueue } from "../../utils/queue";
+
+import * as db from "../../utils/db";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -7,17 +9,16 @@ module.exports = {
     .setDescription("Get guild queue"),
   async execute(interaction: any) {
     await interaction.reply("Getting queue...");
-    if (!!interaction.member?.voice.channel) {
-      const queue = interaction.client.resourceQueues.get(
-        interaction.guild?.id
-      );
-      if (queue && queue.length > 1) {
-          interaction.followUp("Current queue: \n" + formatQueue(getGuildQueue(interaction)));
-      } else {
-        interaction.followUp("Empty queue.");
-      }
-    } else {
+
+    if (!interaction.member?.voice.channel) {
       interaction.followUp("You must join voice channel to use this command!");
+      return;
     }
+
+    const queue = await db.getQueue(interaction.member.voice.channel.guild.id);
+    if (queue && queue.length >= 1)
+      return interaction.followUp("Current queue: \n" + formatQueue(queue));
+
+    interaction.followUp("Empty queue.");
   },
 };

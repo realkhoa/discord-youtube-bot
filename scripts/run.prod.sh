@@ -21,6 +21,9 @@ echo Deleted $(rm -rfv ./dist | wc -l) file;
 echo "Building...";
 tsc -p tsconfig.json;
 
+echo "Creating database directory..."
+mkdir .database/
+
 echo Deploying slash commands
 node ./dist/deploy.js
 
