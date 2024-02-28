@@ -1,11 +1,9 @@
-import { joinVoiceChannel } from "@discordjs/voice";
+import {joinVoiceChannel, VoiceConnection} from "@discordjs/voice";
 import { SlashCommandBuilder } from "discord.js";
 
 import { addToQueue } from "../../utils/playdlAPI";
 import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer";
 import awaiter from "../../utils/awaiter";
-
-import * as db from "../../utils/db";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -30,7 +28,7 @@ module.exports = {
     }
 
     const channel = interaction.member.voice.channel;
-    const connection = joinVoiceChannel({
+    const connection: VoiceConnection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
       adapterCreator: channel.guild.voiceAdapterCreator,
@@ -48,7 +46,7 @@ module.exports = {
     }
 
     if (await canStartNewPlayer(interaction)) {
-      startMusicPlayer(interaction.guild?.id, connection, interaction);
+      await startMusicPlayer(interaction.guild?.id, connection, interaction);
     }
   },
 };

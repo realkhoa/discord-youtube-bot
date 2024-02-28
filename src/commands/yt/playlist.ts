@@ -4,8 +4,6 @@ import { joinVoiceChannel } from "@discordjs/voice";
 import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer";
 import awaiter from "../../utils/awaiter";
 
-import * as db from "../../utils/db";
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("playlist")
@@ -24,7 +22,6 @@ module.exports = {
       return;
     }
 
-    const botVcID = interaction.guild?.members.me?.voice.channelId;
     const channel = interaction.member.voice.channel;
     const connection = joinVoiceChannel({
       channelId: channel.id,
@@ -32,7 +29,6 @@ module.exports = {
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
 
-    const oldQueue = (await db.getQueue(interaction.guild?.id)) || [];
     const playlistURL = await interaction.options.getString("url");
 
     const [videos, getPlayListVideoError] = await awaiter(
@@ -52,7 +48,7 @@ module.exports = {
     interaction.followUp("Added " + videos!.length + " videos to queue");
 
     if (await canStartNewPlayer(interaction)) {
-      startMusicPlayer(interaction.guild?.id, connection, interaction);
+      await startMusicPlayer(interaction.guild?.id, connection, interaction);
     }
   },
 };

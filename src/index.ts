@@ -101,7 +101,7 @@ client.on(Events.InteractionCreate, async (interaction: any) => {
 // Supress all embeds (like thumbnail,...) on bot mesage
 client.on(Events.MessageCreate, async (message: Message) => {
   if (message.author.id === config().botID) {
-    message.suppressEmbeds(true);
+    await message.suppressEmbeds(true);
   }
 });
 
