@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, Message } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import * as db from "../../utils/db";
 import { getGuildAudioPlayer } from "../../utils/musicPlayer";
 

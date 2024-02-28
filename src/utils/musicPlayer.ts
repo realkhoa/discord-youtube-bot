@@ -1,20 +1,19 @@
 import {
-  AudioPlayer,
-  AudioPlayerStatus,
-  VoiceConnection,
+    AudioPlayer,
+    AudioPlayerStatus,
+    createAudioPlayer,
+    createAudioResource,
+    VoiceConnection,
 } from "@discordjs/voice";
-import { Client, Message } from "discord.js";
-import { createAudioPlayer, createAudioResource } from "@discordjs/voice";
+import {Message} from "discord.js";
 
 import * as db from "./db";
-import { getStream } from "./playdlAPI";
+import {getStream} from "./playdlAPI";
 
 export async function getGuildAudioPlayer(interaction: Message) {
-  const player = interaction.client.audioPlayerList.get(
-    interaction.guild?.id || ""
+    return interaction.client.audioPlayerList.get(
+      interaction.guild?.id || ""
   );
-
-  return player;
 }
 
 export async function dropAudioPlayer(interaction: Message) {
@@ -57,7 +56,7 @@ export default async function startMusicPlayer(
   const currentSong = await db.getCurrentSong(guid);
 
   if (currentSong == null) {
-    interaction.channel.send(
+    await interaction.channel.send(
       "Queue is empty. Using /play command to add new song to queue!"
     );
     return;
@@ -71,22 +70,22 @@ export default async function startMusicPlayer(
   player.play(resource);
   connection.subscribe(player);
 
-  setGuildAudioPlayer(interaction, player);
+  await setGuildAudioPlayer(interaction, player);
 
-  interaction.channel.send("Now playing: " + currentSong.title);
+  await interaction.channel.send("Now playing: " + currentSong.title);
 
   player.once(AudioPlayerStatus.Paused, async () => {
     await db.shiftQueue(guid);
-    startMusicPlayer(guid, connection, interaction);
+    await startMusicPlayer(guid, connection, interaction);
   }); // Handle Skip
 
   player.once(AudioPlayerStatus.Idle, async () => {
     await db.shiftQueue(guid);
-    startMusicPlayer(guid, connection, interaction);
+    await startMusicPlayer(guid, connection, interaction);
   }); // Handle next song
 }
 
 export async function stopMusicPlayer(interaction: Message) {
   await db.clearQueue(interaction.guild?.id || "");
-  dropAudioPlayer(interaction);
+  await dropAudioPlayer(interaction);
 }

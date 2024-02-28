@@ -15,11 +15,11 @@ module.exports = {
         adapterCreator: channel.guild.voiceAdapterCreator,
       });
 
-      stopMusicPlayer(interaction);
+      await stopMusicPlayer(interaction);
       connection.disconnect();
-      interaction.reply("Stopped!");
+      await interaction.reply("Stopped!");
     } else {
-      interaction.reply("You must join voice channel to use this command!");
+      await interaction.reply("You must join voice channel to use this command!");
     }
   },
 };
