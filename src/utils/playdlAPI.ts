@@ -13,11 +13,9 @@ export async function prepareDl(): Promise<void> {
   });
 
   if (playdl.is_expired()) {
-    try {
-      await playdl.refreshToken()
-    } catch (e) {
-      // nutthing here
-    }
+    playdl.refreshToken()
+    .then()
+    .catch();
   }
 }
 
