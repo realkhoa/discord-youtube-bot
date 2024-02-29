@@ -6,17 +6,20 @@ import * as db from "./db";
 
 
 export async function prepareDl(): Promise<void> {
-  await playdl.setToken({
-    youtube: {
-      cookie: loadConfig().youtubeCookies,
-    },
-  });
+  try {
+    await playdl.setToken({
+      youtube: {
+        cookie: loadConfig().youtubeCookies,
+      },
+    });
 
-  if (playdl.is_expired()) {
-    playdl.refreshToken()
-    .then()
-    .catch();
+    if (playdl.is_expired()) {
+      await playdl.refreshToken();
+    }
+  } catch (e) {
+    // Nothing
   }
+
 }
 
 export async function addToQueue(interaction: any, videoURL: string) {
