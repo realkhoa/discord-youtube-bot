@@ -1,12 +1,12 @@
 import { joinVoiceChannel } from "@discordjs/voice";
 import { SlashCommandBuilder, Message } from "discord.js";
-import { stopMusicPlayer } from "../../utils/musicPlayer";
+import { stopMusicPlayer } from "../../utils/musicPlayer/musicPlayer";
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("stop")
     .setDescription("Clear the queue and disconnect"),
-  async execute(interaction: Message) {
+  async execute(interaction: Message | any) {
     if (!!interaction.member?.voice.channel) {
       const channel = interaction.member.voice.channel;
       const connection = joinVoiceChannel({
@@ -19,7 +19,10 @@ module.exports = {
       connection.disconnect();
       await interaction.reply("Stopped!");
     } else {
-      await interaction.reply("You must join voice channel to use this command!");
+      await interaction.reply({
+        content: "You must join voice channel to use this command!",
+        ephemeral: true,
+      });
     }
   },
 };

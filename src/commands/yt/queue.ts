@@ -8,10 +8,16 @@ module.exports = {
     .setName("queue")
     .setDescription("Get guild queue"),
   async execute(interaction: any) {
-    await interaction.reply("Getting queue...");
+    await interaction.reply({
+      content: "Getting queue...",
+      ephemeral: true,
+    });
 
     if (!interaction.member?.voice.channel) {
-      interaction.followUp("You must join voice channel to use this command!");
+      interaction.followUp({
+        content: "You must join voice channel to use this command!",
+        ephemeral: true,
+      });
       return;
     }
 
