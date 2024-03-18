@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
-import { addToQueue, getPlaylistVideos } from "../../utils/playdlAPI";
+import { addToQueue, getPlaylistVideos } from "../../utils/playdl/playdlAPI";
 import { joinVoiceChannel } from "@discordjs/voice";
-import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer";
+import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer/musicPlayer";
 import awaiter from "../../utils/awaiter";
 
 module.exports = {
@@ -15,10 +15,16 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction: any) {
-    await interaction.reply("Getting playlist info...");
+    await interaction.reply({
+      content: "Getting playlist info...",
+      ephemeral: true,
+    });
 
     if (!interaction.member?.voice.channel) {
-      interaction.followUp("You must join voice channel to use this command!");
+      interaction.followUp({
+        content: "You must join voice channel to use this command!",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -48,7 +54,7 @@ module.exports = {
     interaction.followUp("Added " + videos!.length + " videos to queue");
 
     if (await canStartNewPlayer(interaction)) {
-      await startMusicPlayer(interaction.guild?.id, connection, interaction);
+      await startMusicPlayer(interaction);
     }
   },
 };

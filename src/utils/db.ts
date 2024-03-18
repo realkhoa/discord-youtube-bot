@@ -2,9 +2,9 @@ import sqlite3, { Statement } from "sqlite3";
 import { AsyncDatabase } from "promised-sqlite3";
 import fs from "fs";
 import { ISongData } from "../types/ISongData";
-import loadConfig from "../config";
+import config from "../config";
 
-const dbPath = loadConfig().databasePath;
+const dbPath = config.databasePath;
 const tablesPath = "./assets/tables.sql";
 
 export async function prepareTables(): Promise<void> {

@@ -1,8 +1,8 @@
 import {joinVoiceChannel, VoiceConnection} from "@discordjs/voice";
 import { SlashCommandBuilder } from "discord.js";
 
-import { addToQueue } from "../../utils/playdlAPI";
-import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer";
+import { addToQueue } from "../../utils/playdl/playdlAPI";
+import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer/musicPlayer";
 import awaiter from "../../utils/awaiter";
 
 module.exports = {
@@ -17,13 +17,16 @@ module.exports = {
     ),
   // Change type to Message if u need to extend it
   async execute(interaction: any) {
-    await interaction.reply("Adding song...");
+    await interaction.reply({
+      content: "Adding...",
+      ephemeral: true,
+    });
 
     if (!interaction.member?.voice.channel) {
-      await interaction.followUp(
-        "You must join voice channel to use this command!"
-      );
-
+      await interaction.followUp({
+        content: "You must join voice channel to use this command!",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -40,13 +43,18 @@ module.exports = {
     );
 
     if (addQueueError) {
-      await interaction.followUp(addQueueError.message);
+      await interaction.followUp({
+        content: addQueueError.message,
+        ephemeral: true,
+      });
     } else {
-      await interaction.followUp("Added " + videoTitle + " to queue");
+      await interaction.followUp({
+        content: "Added " + videoTitle + " to queue",
+      });
     }
 
     if (await canStartNewPlayer(interaction)) {
-      await startMusicPlayer(interaction.guild?.id, connection, interaction);
+      await startMusicPlayer(interaction);
     }
   },
 };

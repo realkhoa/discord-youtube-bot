@@ -11,7 +11,6 @@ import fs from "fs";
 import path from "path";
 
 import config from "./config";
-import { IQueueData } from "./types/IQueueData";
 import { AudioPlayer } from "@discordjs/voice";
 
 // Manipulate Client of discord.js. Fk ts
@@ -100,9 +99,9 @@ client.on(Events.InteractionCreate, async (interaction: any) => {
 
 // Supress all embeds (like thumbnail,...) on bot mesage
 client.on(Events.MessageCreate, async (message: Message) => {
-  if (message.author.id === config().botID) {
+  if (message.author.id === config.botID) {
     await message.suppressEmbeds(true);
   }
 });
 
-client.login(config().token);
+client.login(config.token);

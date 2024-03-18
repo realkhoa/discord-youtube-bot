@@ -1,29 +1,10 @@
-import loadConfig from "../config";
+import config from "../../config";
 import playdl, {YouTubeStream} from "play-dl";
-import {ISongData} from "../types/ISongData";
+import {ISongData} from "../../types/ISongData";
 
-import * as db from "./db";
-
-
-export async function prepareDl(): Promise<void> {
-  try {
-    await playdl.setToken({
-      youtube: {
-        cookie: loadConfig().youtubeCookies,
-      },
-    });
-
-    if (playdl.is_expired()) {
-      await playdl.refreshToken();
-    }
-  } catch (e) {
-    // Nothing
-  }
-
-}
+import * as db from "../db";
 
 export async function addToQueue(interaction: any, videoURL: string) {
-  await prepareDl()
   const vidInfo = await playdl.video_basic_info(videoURL);
 
   await db.addToQueue(
@@ -39,7 +20,6 @@ export async function addToQueue(interaction: any, videoURL: string) {
 }
 
 export async function getPlaylistVideos(url: string) {
-  await prepareDl()
   const playlist = await playdl.playlist_info(url, { incomplete: true });
   const videos = await playlist.all_videos();
 
@@ -53,7 +33,6 @@ export async function getPlaylistVideos(url: string) {
 }
 
 export async function getStream(src: string | undefined): Promise<YouTubeStream> {
-  await prepareDl()
     return await playdl.stream(src || "", {
       discordPlayerCompatibility: true,
   });
