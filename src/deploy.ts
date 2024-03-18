@@ -38,7 +38,7 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(config().token);
+const rest = new REST().setToken(config.token);
 
 // and deploy your commands!
 (async () => {
@@ -49,7 +49,7 @@ const rest = new REST().setToken(config().token);
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const data: any = await rest.put(
-      Routes.applicationCommands(config().applicationID),
+      Routes.applicationCommands(config.applicationID),
       { body: commands }
     );
 
