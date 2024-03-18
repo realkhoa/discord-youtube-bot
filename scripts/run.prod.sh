@@ -28,7 +28,7 @@ echo "Preparing database..."
 ts-node ./src/prepareDatabase.ts
 
 echo Deploying slash commands
-node ./dist/deploy.js
+ts-node ./src/deploy.js
 
 echo "Done. Starting application";
 node ./dist/index.js;
