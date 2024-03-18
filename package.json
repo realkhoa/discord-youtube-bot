@@ -28,7 +28,6 @@
   },
   "scripts": {
     "dev": "ts-node ./src/prepareDatabase && nodemon ./src/index.ts",
-    "start": "sh ./scripts/run.prod.sh",
-    "setup": "sh ./scripts/setup.credentials.sh"
+    "start": "sh ./scripts/run.prod.sh"
   }
 }
