@@ -1,25 +1,29 @@
-import { SlashCommandBuilder, Message } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import * as db from "../../utils/db";
-import { getGuildAudioPlayer } from "../../utils/musicPlayer";
+import { skipToNextSong } from "../../utils/musicPlayer/musicPlayer";
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("skip")
     .setDescription("Skip to next song"),
   async execute(interaction: any) {
-    await interaction.reply("Skipping...");
+    await interaction.reply({
+      content: "Skipping...",
+      ephemeral: true,
+    });
 
     if (!interaction.member?.voice.channel) {
-      interaction.followUp("You must join voice channel to use this command!");
+      await interaction.followUp({
+        content: "You must join a voice channel to use this command.",
+        ephemeral: true,
+      });
       return;
     }
     const guid = interaction.guild?.id;
     const isEmptyQueue = await db.isEmptyQueue(guid);
 
     if (!isEmptyQueue) {
-      const player = await getGuildAudioPlayer(interaction);
-      // Just pause the player. See musicPlayer.ts file for more information.
-      player?.pause();
+      skipToNextSong(interaction);
       return;
     }
 

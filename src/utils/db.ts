@@ -2,9 +2,9 @@ import sqlite3, { Statement } from "sqlite3";
 import { AsyncDatabase } from "promised-sqlite3";
 import fs from "fs";
 import { ISongData } from "../types/ISongData";
-import loadConfig from "../config";
+import config from "../config";
 
-const dbPath = loadConfig().databasePath;
+const dbPath = config.databasePath;
 const tablesPath = "./assets/tables.sql";
 
 export async function prepareTables(): Promise<void> {
@@ -100,17 +100,13 @@ export async function isEmptyQueue(guid: string) {
     $guid: guid,
   });
 
-  if (!data) return true;
-  return false;
+  return !data;
 }
 
 export async function clearQueue(guid: string | undefined) {
-  const db = await AsyncDatabase.open(dbPath);
+  const db: AsyncDatabase = await AsyncDatabase.open(dbPath);
 
-  const deleteStatement = `
-    DELETE FROM "QUEUES"
-    WHERE guid = $guid
-  `;
+  const deleteStatement: string = `DELETE FROM "QUEUES" WHERE guid = $guid`;
 
   await db.run(deleteStatement, {
     $guid: guid,
