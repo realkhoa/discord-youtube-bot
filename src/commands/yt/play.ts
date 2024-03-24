@@ -8,11 +8,11 @@ import awaiter from "../../utils/awaiter";
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("play")
-    .setDescription("Play audio of Youtube or Soundcloud URL")
+    .setDescription("Play audio of Youtube or Soundcloud URL, or name.")
     .addStringOption((option) =>
       option
         .setName("url")
-        .setDescription("Youtube or Soundcloud")
+        .setDescription("Youtube URL or query")
         .setRequired(true)
     ),
   // Change type to Message if u need to extend it
