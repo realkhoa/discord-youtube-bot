@@ -12,6 +12,7 @@ import {Message} from "discord.js";
 
 import * as db from "../db";
 import {getStream} from "../playdl/playdlAPI";
+import { YouTubeStream } from "play-dl";
 
 export async function getGuildAudioPlayer(interaction: Message) {
   const audioPlayer = interaction.client.audioPlayerList.get(
@@ -80,7 +81,18 @@ export default async function startMusicPlayer(
     return;
   }
 
-  const stream = await getStream(currentSong.src);
+  var stream: YouTubeStream;
+  try {
+    stream = await getStream(currentSong.src);
+  } catch(e) {
+    await interaction.channel.send({
+      content: `Some error occur while getting video audio. Skipping...\nTitle: [${currentSong.title}](${currentSong.src})`,
+      ephemeral: true,
+    });
+
+    await skipToNextSong(interaction);
+    return;
+  }
   const player = await getGuildAudioPlayer(interaction) || createAudioPlayer();
   const resource = createAudioResource(stream.stream);
 
@@ -112,8 +124,8 @@ export async function skipToNextSong(interaction: Message | any) {
 
   const guid = channel.guild.id;
 
-  if (!player) return interaction.channel.send({
-    content: "Could not get guild player.",
+  if (!player) interaction.channel.send({
+    content: "Could not get guild player. Starting new one...",
     ephemeral: true,
   });
 

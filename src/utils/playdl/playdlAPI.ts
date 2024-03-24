@@ -1,4 +1,3 @@
-import config from "../../config";
 import playdl, { YouTubeStream } from "play-dl";
 import { ISongData } from "../../types/ISongData";
 
