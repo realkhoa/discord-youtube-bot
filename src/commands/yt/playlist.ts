@@ -3,6 +3,7 @@ import { addToQueue, getPlaylistVideos } from "../../utils/playdl/playdlAPI";
 import { joinVoiceChannel } from "@discordjs/voice";
 import startMusicPlayer, { canStartNewPlayer } from "../../utils/musicPlayer/musicPlayer";
 import awaiter from "../../utils/awaiter";
+import { getAuthorVoiceChannel, getBotVoiceConnection } from "../../utils/discordUtils";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,34 +21,14 @@ module.exports = {
       ephemeral: true,
     });
 
-    if (!interaction.member?.voice.channel) {
-      interaction.followUp({
-        content: "You must join voice channel to use this command!",
-        ephemeral: true,
-      });
-      return;
-    }
+    const authorVoiceChannel = getAuthorVoiceChannel(interaction);
+    const botVoiceConnection = getBotVoiceConnection(interaction);
 
-    const channel = interaction.member.voice.channel;
-    const connection = joinVoiceChannel({
-      channelId: channel.id,
-      guildId: channel.guild.id,
-      adapterCreator: channel.guild.voiceAdapterCreator,
-    });
+    const playlistURL = await interaction.options.getString("url")!; // Required Field. Safe to do this
 
-    const playlistURL = await interaction.options.getString("url");
+    const videos = await getPlaylistVideos(playlistURL)
 
-    const [videos, getPlayListVideoError] = await awaiter(
-      getPlaylistVideos(playlistURL)
-    );
-
-    if (getPlayListVideoError) {
-      await interaction.followUp(getPlayListVideoError.message);
-
-      return;
-    }
-
-    const bulkQueue = videos!.map(async (e) => addToQueue(interaction, e.src!));
+    const bulkQueue = videos.map(async (e) => addToQueue(interaction, e.src!));
 
     await Promise.all(bulkQueue);
 

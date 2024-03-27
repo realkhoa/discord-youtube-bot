@@ -5,6 +5,7 @@ import {
   Events,
   Message,
   Collection,
+  ChatInputCommandInteraction,
 } from "discord.js";
 
 import fs from "fs";
@@ -81,16 +82,16 @@ client.on(Events.InteractionCreate, async (interaction: any) => {
       return;
     }
     await command.execute(interaction);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
+        content: "There was an error while executing this command!\n`"  + error.message + "`",
         ephemeral: true,
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
+        content: "There was an error while executing this command!\n`"  + error.message + "`",
         ephemeral: true,
       });
     }
