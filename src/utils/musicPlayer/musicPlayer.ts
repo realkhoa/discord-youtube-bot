@@ -8,20 +8,20 @@ import {
     NoSubscriberBehavior,
     VoiceConnection,
 } from "@discordjs/voice";
-import {Message} from "discord.js";
+import {ChatInputCommandInteraction, Message} from "discord.js";
 
 import * as db from "../db";
 import {getStream} from "../playdl/playdlAPI";
 import { YouTubeStream } from "play-dl";
 
-export async function getGuildAudioPlayer(interaction: Message) {
+export async function getGuildAudioPlayer(interaction: ChatInputCommandInteraction) {
   const audioPlayer = interaction.client.audioPlayerList.get(
     interaction.guild?.id || "");
 
   return audioPlayer;
 }
 
-export async function dropAudioPlayer(interaction: Message) {
+export async function dropAudioPlayer(interaction: ChatInputCommandInteraction) {
   interaction.client.audioPlayerList.delete(interaction.guild?.id || "");
 }
 
@@ -32,7 +32,7 @@ export async function setGuildAudioPlayer(
   interaction.client.audioPlayerList.set(interaction.guild?.id || "", player);
 }
 
-export async function canStartNewPlayer(interaction: Message) {
+export async function canStartNewPlayer(interaction: ChatInputCommandInteraction) {
   const botVoiceChannelID = interaction.guild?.members.me?.voice.channelId;
   let audioPlayer = await getGuildAudioPlayer(interaction);;
 
@@ -109,7 +109,7 @@ export default async function startMusicPlayer(
   }); // Handle next song
 }
 
-export async function stopMusicPlayer(interaction: Message) {
+export async function stopMusicPlayer(interaction: ChatInputCommandInteraction) {
   await db.clearQueue(interaction.guild?.id || "");
   await dropAudioPlayer(interaction);
 }

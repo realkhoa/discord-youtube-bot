@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { formatQueue } from "../../utils/queue";
 
 import * as db from "../../utils/db";
+import { getAuthorVoiceChannel, getBotVoiceConnection, getGuildId } from "../../utils/discordUtils";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -13,15 +14,11 @@ module.exports = {
       ephemeral: true,
     });
 
-    if (!interaction.member?.voice.channel) {
-      interaction.followUp({
-        content: "You must join voice channel to use this command!",
-        ephemeral: true,
-      });
-      return;
-    }
+    const authorVoiceChannel = getAuthorVoiceChannel(interaction);
+    const botVoiceConnection = getBotVoiceConnection(interaction);
+    const guildId = getGuildId(interaction)
 
-    const queue = await db.getQueue(interaction.member.voice.channel.guild.id);
+    const queue = await db.getQueue(guildId);
     if (queue && queue.length >= 1)
       return interaction.followUp("Current queue: \n" + formatQueue(queue));
 
